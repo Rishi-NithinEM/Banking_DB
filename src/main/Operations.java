@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 public class Operations {
 
-    public static FileHandling fileHandling = new FileHandling();
 
 
     public static void createNewCustomer() throws IOException {

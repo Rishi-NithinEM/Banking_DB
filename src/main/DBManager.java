@@ -96,6 +96,7 @@ public class DBManager {
         String ben = "create table if not exists beneficiary(\n" +
                 "\tsender_acc_no int unsigned,\n" +
                 "\treceiver_acc_no int unsigned,\n" +
+                "\tconstraint pk_beneficiary primary key(sender_acc_no,receiver_acc_no),\n"+
                 "\tconstraint fk_beneficiary_sender_acc_no foreign key(sender_acc_no) references account(acc_no),\n" +
                 "\tconstraint fk_beneficiary_receiver_acc_no foreign key(receiver_acc_no) references account(acc_no));";
 
@@ -384,14 +385,12 @@ public class DBManager {
 
     public static boolean writeToDB(Transaction tt, int customerID) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("wrdb tr");
+//        System.out.println("wrdb tr");
         long transactionID = 0;
         String query, update = "";
         if (!isOwner(tt.getSenderAccNo(), customerID)) {
             System.out.println("Sender acc not owned");
             return false;
-        } else {
-            System.out.println("Owned");
         }
 
         System.out.println("Enter pin");
@@ -418,6 +417,10 @@ public class DBManager {
             tt.setTranactionTime(new Date().toString());
             String insertUpdate = "insert into transaction values(";
 
+            if(getAccount(tt.getSenderAccNo()).getBalance() < tt.getTransactionAmt()){
+                System.out.println("Transaction amt exceeds balance");
+                return false;
+            }
 
             System.out.println("Transfer");
             insertUpdate += tt.getSenderAccNo() + "," + tt.getReceiverAccNo() + ",";
@@ -464,6 +467,7 @@ public class DBManager {
         try(ConnectionHandler rs = new ConnectionHandler(query)){
         }catch (SQLException e){
             System.out.println(e + " caught at adding beneficiary");
+            System.out.println("Already that account exists");
             return false;
         }
         System.out.println("Beneficiary added");

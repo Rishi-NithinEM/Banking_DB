@@ -13,8 +13,6 @@ import java.util.Scanner;
 
 public class TransactionFunctions {
 
-    public static FileHandling fileHandling = new FileHandling();
-
 
     public void transfer(Customer cust, Transaction tr) throws IOException, SQLException {
         Scanner sc = new Scanner(System.in);
@@ -33,6 +31,10 @@ public class TransactionFunctions {
             }
 
             tr.setSenderAccNo(accNo);
+            if(!DBManager.isOwner(accNo,cust.getCustomerID())){
+                System.out.println("Account not owned");
+                return;
+            }
             acc = DBManager.getAccount(accNo);
 
             if (!DBManager.getBeneficiary(accNo).isEmpty()) {
@@ -119,7 +121,7 @@ public class TransactionFunctions {
         System.out.println("Enter Beneficiary Account number");
         Account racc;
         int accnNo = Integer.parseInt(sc.nextLine());
-        if (accnNo != acc.getAccountNo() && checkBeneficiary(acc.getAccountNo(), accnNo)) {
+        if (accnNo != acc.getAccountNo()) {
             racc = DBManager.getAccount(accnNo);
             if (racc != null) {
                 System.out.println("Enter Beneficiary Account IFSC code");
@@ -127,9 +129,10 @@ public class TransactionFunctions {
 
                 if (racc.getIfscCode().equals(code)) {
 
-                    DBManager.writeToDB(acc.getAccountNo(), racc.getAccountNo());
-                    System.out.println("New beneficiary Added");
-                    return racc;
+                    if(DBManager.writeToDB(acc.getAccountNo(), racc.getAccountNo())){
+                        System.out.println("New beneficiary Added");
+                        return racc;
+                    }
 
                 } else {
                     System.out.println("Wrong IFSC code");
@@ -143,23 +146,6 @@ public class TransactionFunctions {
         }
 
         return null;
-    }
-
-    public boolean checkBeneficiary(int accNo, int benNo) throws IOException {
-
-        String st = fileHandling.getBeneficiaryfromFile(accNo);
-        if (st == "") {
-            return true;
-        } else {
-            String no[] = st.split(";");
-            for (String s : no) {
-                if (benNo == Integer.parseInt(s)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
     }
 
 
@@ -186,39 +172,6 @@ public class TransactionFunctions {
         return;
     }
 
-
-    public Account checkAccountNo(int accNo, Customer cust) throws IOException {
-
-        List<Account> accountList = fileHandling.getAccountList();
-        if (accountList != null) {
-            for (Account acc : accountList) {
-                if (acc.getAccountNo() == accNo && acc.getCustomerID() == cust.getCustomerID()) {
-                    return acc;
-                } else
-                    continue;
-            }
-            System.out.println("Sorry No Account found of that Account Number");
-        } else {
-            System.out.println("No Account created");
-        }
-        return null;
-    }
-
-    public Account checkAccountNo(int accNo) throws IOException {
-
-
-        Iterator var5 = fileHandling.getAccountList().iterator();
-
-        while (var5.hasNext()) {
-            Account acc = (Account) var5.next();
-
-            if (acc.getAccountNo() == accNo) {
-                return acc;
-            }
-        }
-
-        return null;
-    }
 
 
 }
