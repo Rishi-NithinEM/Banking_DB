@@ -5,6 +5,7 @@ import main.DBManager;
 import main.Operations;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class Employee {
@@ -154,6 +155,28 @@ public class Employee {
             System.out.println("Your Employee ID : " + this.getEmployeeID());
             return;
         }
+    }
+
+
+    public void employeeFunctions() throws IOException, ParseException {
+
+
+        Employee.EmployeeType st = this.getEmployeeType();
+
+        switch (st) {
+            case Manager:
+                Operations.managerFunctions();
+                break;
+            case Accountant:
+                Operations.accountantFunctions();
+                break;
+            case Cashier:
+                System.out.println("No Function for the cashier");
+                break;
+
+        }
+
+
     }
 
 }

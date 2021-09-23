@@ -136,7 +136,7 @@ public class Operations {
 
             if (ee != null) {
                     System.out.println(ee.getEmployeeName() + "'s Employee account");
-                    employeeFunctions(ee);
+                    ee.employeeFunctions();
             } else {
                 System.out.println("Invalid id or no employee found");
                 return;
@@ -147,26 +147,7 @@ public class Operations {
 
 
 
-    public static void employeeFunctions(Employee ee) throws IOException, ParseException {
 
-
-        Employee.EmployeeType st = ee.getEmployeeType();
-
-        switch (st) {
-            case Manager:
-                managerFunctions();
-                break;
-            case Accountant:
-                accountantFunctions();
-                break;
-            case Cashier:
-                System.out.println("No Function for the cashier");
-                break;
-
-        }
-
-
-    }
 
 
     public static void managerFunctions() throws IOException {
