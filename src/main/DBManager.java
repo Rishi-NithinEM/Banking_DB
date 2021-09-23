@@ -18,7 +18,8 @@ import java.util.Scanner;
 
 public class DBManager {
 
-    public static void createTable() throws SQLException {
+    public static void createTable() throws SQLException {  // This is used to the create tables
+
         String custquery = "create table if not exists customer(\n" +
                 "\tcust_id int unsigned auto_increment,\n" +
                 "\tcust_fname varchar(35) not null,\n" +
@@ -114,7 +115,7 @@ public class DBManager {
 
     }
 
-    public static boolean writeToDB(Customer cust) {
+    public static boolean writeToDB(Customer cust) {   //To write a Customer to DB
         String query = "select max(cust_id) from customer;";
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
             int customerID = 0;
@@ -137,7 +138,7 @@ public class DBManager {
         return false;
     }
 
-    public static boolean writeToDB(Employee emp) {
+    public static boolean writeToDB(Employee emp) {   //To write a employee to DB
         String query = "select max(emp_id) from employee";
         try (ConnectionHandler rs = new ConnectionHandler(query)) {
             int empID = 0;
@@ -157,7 +158,7 @@ public class DBManager {
         return true;
     }
 
-    public static boolean writeToDB(Account ac) {
+    public static boolean writeToDB(Account ac) {   //To write a account to DB
         System.out.println("\nAdding an acc");
         String lastAcc = "select max(acc_no) from account;";
         try (ConnectionHandler ch = new ConnectionHandler(lastAcc)) {
@@ -196,7 +197,7 @@ public class DBManager {
         return true;
     }
 
-    private static boolean writeToDB(SavingsAccount sb) {
+    private static boolean writeToDB(SavingsAccount sb) {  //To write a specific type of account to DB
         String query = "insert into savings_account values(";
         query += sb.getAccountNo() + "," + sb.getWithdrawLimit() + ")";
 //        System.out.println(query);
@@ -211,7 +212,7 @@ public class DBManager {
 
     }
 
-    private static boolean writeToDB(CurrentAccount ca) {
+    private static boolean writeToDB(CurrentAccount ca) {  //To write a specific type of account to DB
         System.out.println("Adding CA");
         String query = "insert into current_account values(";
         query += ca.getAccountNo() + "," + ca.getCreditLimit() + "," + ca.getWithdrawLimit() + ");";
@@ -226,7 +227,7 @@ public class DBManager {
 
     }
 
-    private static boolean writeToDB(DepositAccount da) {
+    private static boolean writeToDB(DepositAccount da) {  //To write a specific type of account to DB
         System.out.println("Adding DA");
         String query = "insert into current_account values(";
         query += da.getAccountNo() + "," + da.getInterestRate() + ",'";
@@ -242,7 +243,7 @@ public class DBManager {
         return true;
     }
 
-    public static boolean writeToDB(Address ad) {
+    public static boolean writeToDB(Address ad) {  //To write a specific address to DB
         String query = "select max(id) from address";
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
             long addressID = 0;
@@ -264,7 +265,7 @@ public class DBManager {
         return false;
     }
 
-    public static Address getAddress(int addressID) {
+    public static Address getAddress(int addressID) {   //To get a specific address from DB
         String query = "select * from address where id = " + addressID;
         Address ad = new Address();
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
@@ -285,7 +286,7 @@ public class DBManager {
         return ad;
     }
 
-    public static Customer getCustomer(int customerID) {
+    public static Customer getCustomer(int customerID) {   //To get a specific customer from DB
         Customer newCust = null;
         String query = "select * from customer where cust_id = " + customerID;
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
@@ -308,7 +309,8 @@ public class DBManager {
         return null;
     }
 
-    public static Employee getEmployee(int empID, String name) {
+    public static Employee getEmployee(int empID, String name) {  //To get a specific employee from DB
+
         String query = "select * from employee where emp_id = " + empID + " and emp_name = '" + name + "';";
 //        System.out.println(query);
         Employee emp = null;
@@ -330,7 +332,7 @@ public class DBManager {
         return emp;
     }
 
-    public static Account getAccount(int accNo) {
+    public static Account getAccount(int accNo) {   // To get a single account from DB
         Account ac = null;
         String query = "select * from account where acc_no = " + accNo + ";";
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
@@ -351,7 +353,7 @@ public class DBManager {
         return ac;
     }
 
-    public static List<Account> getAllAccounts(String type) {
+    public static List<Account> getAllAccounts(String type) {   // To get all accounts and also specific type
         List<Account> all = new ArrayList<>();
         String query = "select acc_no from account";
         if (!type.equalsIgnoreCase("all")) {
@@ -371,7 +373,7 @@ public class DBManager {
         }
     }
 
-    public static boolean isOwner(int sender_acc, int customerID) {
+    public static boolean isOwner(int sender_acc, int customerID) {  // This function is used to check whether the given account is his or not
 
         String query = "select * from account where cust_id = " + customerID + " and acc_no = " + sender_acc;
 
@@ -383,7 +385,7 @@ public class DBManager {
         return false;
     }
 
-    public static boolean writeToDB(Transaction tt, int customerID) {
+    public static boolean writeToDB(Transaction tt, int customerID) {  // This function is used to write the transaction values into DB
         Scanner sc = new Scanner(System.in);
 //        System.out.println("wrdb tr");
         long transactionID = 0;
@@ -446,7 +448,7 @@ public class DBManager {
         return true;
     }
 
-    public static List<Integer> getBeneficiary(int sender_acc_no){
+    public static List<Integer> getBeneficiary(int sender_acc_no){   // This function is used to get all the beneficiary account of the sender
 
         List<Integer> all= new ArrayList<>();
 
@@ -462,7 +464,7 @@ public class DBManager {
         return all;
     }
 
-    public static boolean writeToDB(int send_acc , int receive_acc) throws SQLException {
+    public static boolean writeToDB(int send_acc , int receive_acc) throws SQLException {  // This function is used to add beneficary accounts into DB
         String query = "insert into beneficiary values("+send_acc+","+receive_acc+")";
         try(ConnectionHandler rs = new ConnectionHandler(query)){
         }catch (SQLException e){
@@ -474,7 +476,7 @@ public class DBManager {
         return true;
     }
 
-    public static void getAllTransaction(int cust_Id){
+    public static void getAllTransaction(int cust_Id){  //This function is used to get all transaction made by a customer
 
         String query;
         if(cust_Id!=-1) {

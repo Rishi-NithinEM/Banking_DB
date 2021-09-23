@@ -25,7 +25,7 @@ public class Operations {
 
 
 
-    public static void createNewCustomer() throws IOException {
+    public static void createNewCustomer() throws IOException {   //Used to get details for creating a new Customer
         Scanner sc = new Scanner(System.in);
         Customer newCustomer = new Customer();
         while (true) {
