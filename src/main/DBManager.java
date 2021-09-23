@@ -9,6 +9,8 @@ import banking.Transaction;
 import employee.Employee;
 import customer.Customer;
 
+import java.io.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,100 +20,27 @@ import java.util.Scanner;
 
 public class DBManager {
 
-    public static void createTable() throws SQLException {  // This is used to the create tables
-
-        String custquery = "create table if not exists customer(\n" +
-                "\tcust_id int unsigned auto_increment,\n" +
-                "\tcust_fname varchar(35) not null,\n" +
-                "\tcust_lname varchar(35) not null,\n" +
-                "\tpass_word varchar(40) not null,\n" +
-                "\taddress_id bigint unsigned not null,\n" +
-                "\tphone_no bigint not null unique,\n" +
-                "\tcust_dob varchar(10) not null,\n" +
-                "\tconstraint pk_cust_id primary key(cust_id),\n" +
-                "\tconstraint fk_customer_address_id foreign key(address_id) references address(id))";
-
-        String addquery = "create table if not exists address(\n" +
-                "\tid bigint unsigned auto_increment,\n" +
-                "\tbuilding_no smallint not null,\n" +
-                "\tarea varchar(40) not null,\n" +
-                "\tcity varchar(25) not null,\n" +
-                "\tstate varchar(20) not null,\n" +
-                "\tpincode mediumint not null,\n" +
-                "\tconstraint pk_address_id primary key(id))";
-
-        String empquery = "create table if not exists employee(\n" +
-                "\temp_id int unsigned auto_increment,\n" +
-                "\temp_name varchar(35) not null,\n" +
-                "\temp_type ENUM('Manager','Accountant','Cashier') not null,\n" +
-                "\tphone_no bigint not null unique,\n" +
-                "\tdob varchar(20) not null,\n" +
-                "\tsalary int unsigned not null,\n" +
-                "\taddress_id bigint unsigned,\n" +
-                "\tconstraint pk_emp_id primary key(emp_id),\n" +
-                "\tconstraint fk_employee_address_id foreign key(address_id) references address(id))";
-
-        String accquery = "create table if not exists account(\n" +
-                "\tcust_id int unsigned not null,\n" +
-                "\tacc_no int unsigned auto_increment,\n" +
-                "\tbranch_name varchar(25) not null,\n" +
-                "\tifsc_code varchar(7) not null,\n" +
-                "\tpin smallint not null,\n" +
-                "\tacc_type  ENUM('Savings', 'Current','Deposit') not null,\n" +
-                "\taccount_balance int unsigned not null,\n" +
-                "\tconstraint pk_acc_no primary key(acc_no),\n" +
-                "\tconstraint fk_account_cust_id foreign key(cust_id) references customer(cust_id));";
-
-        String savquery = "create table if not exists savings_account(\n" +
-                "\tacc_no int unsigned not null,\n" +
-                "\twithdraw_limit mediumint unsigned,\n" +
-                "\tconstraint pk_savings_acc_no primary key(acc_no),\n" +
-                "\tconstraint fk_savings_acc_no foreign key(acc_no) references account(acc_no))";
-
-        String curquery = "create table if not exists current_account(\n" +
-                "\tacc_no int unsigned not null,\n" +
-                "\tcredit_limit int unsigned not null,\n" +
-                "\twithdraw_limit int unsigned,\n" +
-                "\tconstraint pk_current_acc_no primary key(acc_no),\n" +
-                "\tconstraint fk_current_acc_no foreign key(acc_no) references account(acc_no))";
-
-        String depquery = "create table if not exists deposit_account(\n" +
-                "\tacc_no int unsigned not null,\n" +
-                "\tinterest double,\n" +
-                "\tdeposit_date date,\n" +
-                "\tterm_in_month smallint,\n" +
-                "\tconstraint pk_deposit_acc_no primary key(acc_no),\n" +
-                "\tconstraint fk_deposit_acc_no foreign key(acc_no) references account(acc_no))";
-
-        String tranquery = "create table if not exists transaction(\n" +
-                "\tsender_acc_no int unsigned,\n" +
-                "\treceiver_acc_no int unsigned,\n" +
-                "\ttransaction_id bigint unsigned auto_increment,\n" +
-                "\ttransaction_amt int,\n" +
-                "\ttransaction_time varchar(50),\n" +
-                "\tcustomer_id int unsigned not null,\n" +
-                "\tconstraint pk_transaction_id primary key(transaction_id),\n" +
-                "\tconstraint fk_transaction_sender_acc_no foreign key(sender_acc_no) references account(acc_no),\n" +
-                "\tconstraint fk_transaction_receiver_acc_no foreign key(receiver_acc_no) references account(acc_no))";
-
-        String ben = "create table if not exists beneficiary(\n" +
-                "\tsender_acc_no int unsigned,\n" +
-                "\treceiver_acc_no int unsigned,\n" +
-                "\tconstraint pk_beneficiary primary key(sender_acc_no,receiver_acc_no),\n"+
-                "\tconstraint fk_beneficiary_sender_acc_no foreign key(sender_acc_no) references account(acc_no),\n" +
-                "\tconstraint fk_beneficiary_receiver_acc_no foreign key(receiver_acc_no) references account(acc_no));";
+    public static void createTable() throws SQLException, FileNotFoundException {  // This is used to the create tables
 
 
-        ConnectionHandler ch = new ConnectionHandler(addquery);
+        File createFile = new File("create.txt");
+        try {
+            if(!createFile.exists()){
+                createFile.createNewFile();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        ch.execute(custquery);
-        ch.execute(empquery);
-        ch.execute(accquery);
-        ch.execute(savquery);
-        ch.execute(curquery);
-        ch.execute(depquery);
-        ch.execute(tranquery);
-        ch.execute(ben);
+        Scanner  sc = new Scanner(createFile);
+        String creationquery ;
+
+        while(sc.hasNextLine()){
+            creationquery = sc.nextLine();
+            new ConnectionHandler(creationquery);
+//            System.out.println("added");
+        }
+
 
     }
 
@@ -440,7 +369,7 @@ public class DBManager {
 //            System.out.println(insertUpdate);
             rs.execute(insertUpdate);
             rs.execute("commit");
-            Operations.printTransaction(tt);
+            tt.printTransaction();
         } catch (SQLException sqle) {
             System.out.println(sqle + " caught transaction DBM");
             return false;
@@ -498,7 +427,7 @@ public class DBManager {
                 tt.setTranactionTime(rs.getString(5));
                 tt.setCustomerId(cust_Id);
 
-                Operations.printTransaction(tt);
+                tt.printTransaction();
                 b=true;
 
             }
@@ -509,6 +438,36 @@ public class DBManager {
             System.out.println("No transactions made");
         }
 
+    }
+
+    public static boolean isCustomerTableEmpty(){
+
+        String query = "select COUNT(*) from customer";
+
+        try(ConnectionHandler ch = new ConnectionHandler(query)){
+            while (ch.next()){
+                return true;
+            }
+        }catch (Exception e){
+            System.out.println(e+" Caught at empty cust");
+        }
+
+        return false;
+    }
+
+    public static boolean isEmployeeTableEmpty(){
+
+        String query = "select COUNT(*) from employee";
+
+        try(ConnectionHandler ch = new ConnectionHandler(query)){
+            while (ch.next()){
+                return true;
+            }
+        }catch (Exception e){
+            System.out.println(e+" Caught at empty emp");
+        }
+
+        return false;
     }
 
 

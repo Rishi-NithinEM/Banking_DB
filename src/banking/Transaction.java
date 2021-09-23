@@ -57,4 +57,17 @@ public class Transaction {
 
     public void setTranactionTime(String tranactionTime) { this.tranactionTime = tranactionTime; }
 
+
+
+    public void printTransaction() {
+
+
+        System.out.println("Transaction Id : " + this.getTransactionID());
+        System.out.println("Sender Account No : " + this.getSenderAccNo());
+        System.out.println("Transaction Amount :" + this.getTransactionAmt());
+        System.out.println("Receiver Account No : " + this.getReceiverAccNo());
+        System.out.println("Transaction Time :" + this.getTranactionTime() + "\n\n");
+
+    }
+
 }

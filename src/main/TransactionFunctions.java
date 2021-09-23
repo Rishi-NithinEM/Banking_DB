@@ -70,29 +70,6 @@ public class TransactionFunctions {
 
                         tr.setTransactionAmt(amt);
                         DBManager.writeToDB(tr,cust.getCustomerID());
-
-
-//                        if (acc.getBalance() - amt >= 0) {
-//                            tr.setTransactionAmt(amt);
-//                            System.out.println("Enter Pin :");
-//                            int pin = sc.nextInt();
-//                            if (acc.getPin() == pin) {
-//                                acc.setBalance(acc.getBalance() - amt);
-//                                racc.setBalance(racc.getBalance() + amt);
-//                                fileHandling.changeBalance(acc);
-//                                fileHandling.changeBalance(racc);
-//                                tr.setTransactionID(fileHandling.getLastTranId());
-//                                tr.setTranactionTime(new Date().toString());
-//                                fileHandling.addTransactiontoFile(tr);
-//                                Operations.printTransaction(tr);
-//                            } else {
-//                                System.out.println("Wrong pin");
-//                                continue;
-//                            }
-//                        } else {
-//                            System.out.println("Sorry transfer amount exceeds the balance");
-//                            continue;
-
                     }
 
                     break;

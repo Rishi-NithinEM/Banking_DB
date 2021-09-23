@@ -1,5 +1,8 @@
 package main;
 
+import customer.Customer;
+import employee.Employee;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,9 +21,9 @@ public class BankingMain {
 
         String functions = "Enter\n1 : login as Employee\n";
         functions = functions + "2 : login as customer\n";
-        functions = functions + "3 : create new Employee\n";
-        functions = functions + "4 : create a new customer\n";
-        functions = functions + "5 : Exit";
+//        functions = functions + "3 : create new Employee\n";
+//        functions = functions + "4 : create a new customer\n";
+        functions = functions + "3 : Exit";
         Scanner sc = new Scanner(System.in);
         int opt = 0;
         String st;
@@ -31,25 +34,37 @@ public class BankingMain {
             try {
                 opt = Integer.parseInt(st);
             } catch (Exception e) {
-                System.out.println("Enter numbers between 1 - 5 only");
+                System.out.println("Enter numbers between 1 - 3 only");
                 opt = 0;
                 continue;
             }
 
             switch (opt) {
                 case 1:
-                    Operations.isValidEmployee();
-                    break;
+                    if (!DBManager.isEmployeeTableEmpty()) {
+                        Operations.isValidEmployee();
+                        break;
+                    }else {
+                        System.out.println("No Employee created , create a new one first");
+                        new Employee().createNewEmployee();
+                        break;
+                    }
                 case 2:
-                    Operations.isValidCustomer();
-                    break;
+                    if (!DBManager.isCustomerTableEmpty()) {
+                        Operations.isValidCustomer();
+                        break;
+                    } else {
+                        System.out.println("No customer created , create a new one first");
+                        new Customer().createNewCustomer();
+                        break;
+                    }
+//                case 3:
+//                    Operations.createNewEmployee();
+//                    break;
+//                case 4:
+//                    Operations.createNewCustomer();
+//                    break;
                 case 3:
-                    Operations.createNewEmployee();
-                    break;
-                case 4:
-                    Operations.createNewCustomer();
-                    break;
-                case 5:
                     return;
                 default:
                     System.out.println("Enter number between 1 to 5");

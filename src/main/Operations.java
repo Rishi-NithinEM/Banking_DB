@@ -25,51 +25,7 @@ public class Operations {
 
 
 
-    public static void createNewCustomer() throws IOException {   //Used to get details for creating a new Customer
-        Scanner sc = new Scanner(System.in);
-        Customer newCustomer = new Customer();
-        while (true) {
-            System.out.println("\n\nEnter the following details\nFirst Name : ");
-            newCustomer.setFirstName(sc.nextLine());
-            if (!checkName(newCustomer.getFirstName().toLowerCase())) {
-                System.out.println("Enter only alphabets");
-                continue;
-            }
-            System.out.println("Last Name : ");
-            newCustomer.setLastName(sc.nextLine());
-            System.out.println("Phone number : ");
-            String num = sc.nextLine();
-            if (checkPhoneNumber(num))
-                newCustomer.setPhoneNumber(Long.parseLong(num));
-            else {
-                System.out.println("Enter 10 digit number");
-                System.out.println("That starts with 7,8 or 9");
-                continue;
-            }
-            System.out.println("Date of birth as dd/mm/yyyy");
-            newCustomer.setDOB(sc.nextLine());
-            if (!dobCheck(newCustomer.getDOB())) {
-                System.out.println("Print Date in the correct format dd/mm/yyyy (eg: 31/03/1997)");
-                continue;
-            }
-            System.out.println("Enter password");
-            newCustomer.setPassword(sc.nextLine());
-            if (newCustomer.getPassword().trim().equals("")) {
-                System.out.println("password should not be empty");
-                continue;
-            }
 
-            newCustomer.setAddressID(createNewAddress().getAddressID());
-            if (DBManager.writeToDB(newCustomer)) {
-                System.out.println("Added cust");
-            } else {
-                System.out.println("error in cust");
-            }
-            System.out.println("Your CustomerId is : " + newCustomer.getCustomerID());
-            newCustomer = null;
-            return;
-        }
-    }
 
 
     public static boolean checkPhoneNumber(String str) {
@@ -157,73 +113,6 @@ public class Operations {
 
     }
 
-    public static void createNewEmployee() throws IOException {
-        Scanner sc = new Scanner(System.in);
-        String[] empTypes = new String[]{"Manager", "Accountant", "Cashier"};
-        Employee ee = new Employee();
-        while (true) {
-            System.out.println("\n\nEnter the following details to create an employee");
-            System.out.println("Enter the name");
-            ee.setEmployeeName(sc.nextLine());
-            if (!checkName(ee.getEmployeeName().toLowerCase())) {
-                System.out.println("Enter only alphabets");
-                continue;
-            }
-
-            System.out.println("Enter the employee type");
-
-            int typeNum;
-            for (typeNum = 0; typeNum < empTypes.length; ++typeNum) {
-                System.out.println(typeNum + 1 + " for " + empTypes[typeNum]);
-            }
-            String st = sc.nextLine().trim();
-            if (!isNumber(st)) {
-                System.out.println("Enter numbers only");
-                continue;
-            } else {
-                if (Integer.parseInt(st) < 0 || Integer.parseInt(st) > 3) {
-                    System.out.println("Enter number between 1 - 3 only");
-                    continue;
-                }
-            }
-            typeNum = Integer.parseInt(st);
-            ee.setEmployeeType(typeNum - 1);
-            System.out.println("Enter Phone number");
-            st = sc.nextLine();
-            if (!checkPhoneNumber(st)) {
-                System.out.println("Enter 10 digit number");
-                System.out.println("That starts with 7,8 or 9");
-                continue;
-            }
-            ee.setPhoneNum(Long.parseLong(st));
-            System.out.println("Enter the date of birth as dd/mm/yyyy");
-            ee.setDob(sc.nextLine());
-            if (!dobCheck(ee.getDob())) {
-                System.out.println("Print Date in the correct format dd/mm/yyyy (eg: 31/03/1997)");
-                continue;
-            }
-
-
-            System.out.println("Enter the salary");
-            st = sc.nextLine().trim();
-            if (!isNumber(st)) {
-                System.out.println("Enter only digits");
-                continue;
-            }
-            ee.setSalary(Integer.parseInt(st));
-            ee.setEmployeeAddressID(createNewAddress().getAddressID());
-
-            if (DBManager.writeToDB(ee)) {
-                System.out.println("Added emp");
-            } else {
-                System.out.println("error in emp");
-            }
-
-            System.out.println("Your Employee ID : " + ee.getEmployeeID());
-            ee = null;
-            return;
-        }
-    }
 
     public static void isValidEmployee() throws IOException, ParseException {
 
@@ -255,62 +144,7 @@ public class Operations {
     }
 
 
-    public static Address createNewAddress() throws IOException {
-        Scanner sc = new Scanner(System.in);
-        Address newAddress = new Address();
-        String st;
-        while (true) {
-            System.out.println("\nEnter the following details. flat no :");
-            st = sc.nextLine().trim();
-            if (!isNumber(st)) {
-                System.out.println("Enter only number");
-                continue;
-            }
-            newAddress.setBuildingNo(Integer.parseInt(st));
-            break;
-        }
-        System.out.println("Area or Street name");
-        newAddress.setArea(sc.nextLine());
-        System.out.println("City");
-        newAddress.setCity(sc.nextLine());
-        while (true) {
-            System.out.println("State :");
-            System.out.println("1 State_1\n2 State_2\n3 State_3");
-            st = sc.nextLine().trim();
-            if (!isNumber(st)) {
-                System.out.println("Enter only number");
-                continue;
-            } else {
-                if (Integer.parseInt(st) < 0 || Integer.parseInt(st) > 3) {
-                    System.out.println("Enter number between 1 - 3 only");
-                    continue;
-                }
-            }
-            newAddress.setState(Integer.parseInt(st));
-            break;
-        }
-        while (true) {
-            System.out.println("Postal code");
-            st = sc.nextLine();
-            if (st.length() != 6 || !isNumber(st)) {
-                System.out.println("Postal code should be of 6 digits only");
-                continue;
-            }
-            newAddress.setPincode(Long.parseLong(st));
-            break;
-        }
 
-        if (DBManager.writeToDB(newAddress)) {
-            System.out.println("Added address");
-        } else {
-            System.out.println("error in address");
-        }
-
-        // newAddress.setAddressID(fileHandling.getLastAddId());
-        System.out.println("Your AddressId : " + newAddress.getAddressID());
-//        fileHandling.addAddresstoFile(newAddress);
-        return newAddress;
-    }
 
 
     public static void employeeFunctions(Employee ee) throws IOException, ParseException {
@@ -353,7 +187,7 @@ public class Operations {
                     continue;
                 }
                 if (num == 1) {
-                    createNewCustomer();
+                    new Customer().createNewCustomer();
                 } else if (num == 2) {
 
                     System.out.println("Enter your Customer Id");
@@ -420,7 +254,7 @@ public class Operations {
                     accType = "Current";
                     break;
                 case 4:
-                    createNewEmployee();
+                    new Employee().createNewEmployee();
                     break;
                 case 5: {
                     DBManager.getAllTransaction(-1);
@@ -568,15 +402,6 @@ public class Operations {
     }
 
 
-    public static void printTransaction(Transaction tr) {
 
-
-        System.out.println("Transaction Id : " + tr.getTransactionID());
-        System.out.println("Sender Account No : " + tr.getSenderAccNo());
-        System.out.println("Transaction Amount :" + tr.getTransactionAmt());
-        System.out.println("Receiver Account No : " + tr.getReceiverAccNo());
-        System.out.println("Transaction Time :" + tr.getTranactionTime() + "\n\n");
-
-    }
 }
 
