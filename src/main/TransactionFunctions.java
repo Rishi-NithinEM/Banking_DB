@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 public class TransactionFunctions {
 
+//  This function is used to transfer amount between accounts
 
     public void transfer(Customer cust, Transaction tr) throws IOException, SQLException {
         Scanner sc = new Scanner(System.in);
@@ -37,7 +38,7 @@ public class TransactionFunctions {
             }
             acc = DBManager.getAccount(accNo);
 
-            if (!DBManager.getBeneficiary(accNo).isEmpty()) {
+            if (!DBManager.getBeneficiary(accNo).isEmpty()) {    // Here is checks for already added beneficiary accounts, if there isnt one is it creates a new beneficiary account
 
                 System.out.println("Select a beneficiary Account: \n");
 
@@ -93,6 +94,9 @@ public class TransactionFunctions {
         }
     }
 
+
+//    Used for adding beneficiary account to an account
+
     public Account addBeneficiary(Account acc) throws IOException, SQLException {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter Beneficiary Account number");
@@ -125,6 +129,8 @@ public class TransactionFunctions {
         return null;
     }
 
+
+//    This is used to check balance of a account
 
     public void checkBalance(Customer cust) throws IOException {
         Scanner sc = new Scanner(System.in);

@@ -78,6 +78,8 @@ public class Operations {
 
     }
 
+//    This is used to check whether they are a customer or not
+//    if they are a customer then they can perform some online function
 
     public static void isValidCustomer() throws IOException, ParseException, SQLException {
 
@@ -113,6 +115,8 @@ public class Operations {
 
     }
 
+//    This is used to check where they are employee or not
+//    If they are employee each type of employees are given specific tasks
 
     public static void isValidEmployee() throws IOException, ParseException {
 
@@ -144,11 +148,8 @@ public class Operations {
     }
 
 
-
-
-
-
-
+//    This function give unique tasks for Manager employee
+//    So for manager it is he can create a new Customer and Create new account
 
     public static void managerFunctions() throws IOException {
         Scanner sc = new Scanner(System.in);
@@ -201,6 +202,12 @@ public class Operations {
         }
 
     }
+
+
+
+//    This function is used to give unique tasks for Accountant employee
+//    So for Accountant the functions are see all types of account created and see through all the transactions made
+//    And also to create a new employee
 
 
     public static void accountantFunctions() throws IOException, ParseException {
@@ -261,6 +268,10 @@ public class Operations {
         }
     }
 
+
+
+
+//    this function is used to create a new account for a customer
 
     public static Account createNewAccount(Customer cust)  {
         Scanner sc = new Scanner(System.in);
@@ -335,6 +346,10 @@ public class Operations {
         System.out.println("Your Account Number :" + ac.getAccountNo() + "\nIFSC_CODE: " + ac.getIfscCode());
         return ac;
     }
+
+
+//    this function is used to perform online functions for a Customer
+//    Here the customer can transfer amount to another account , check balance and see all transaction
 
 
     public static void performOnlineTransaction(Customer cust) throws IOException, ParseException, SQLException {
