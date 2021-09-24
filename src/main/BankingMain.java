@@ -4,8 +4,6 @@ import customer.Customer;
 import employee.Employee;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Scanner;
@@ -42,7 +40,7 @@ public class BankingMain {
             switch (opt) {
                 case 1:
                     if (!DBManager.isEmployeeTableEmpty()) {
-                        Operations.isValidEmployee();
+                        Operations.loginEmployee();
                         break;
                     }else {
                         System.out.println("No Employee created , create a new one first");
@@ -51,7 +49,7 @@ public class BankingMain {
                     }
                 case 2:
                     if (!DBManager.isCustomerTableEmpty()) {
-                        Operations.isValidCustomer();
+                        Operations.loginCustomer();
                         break;
                     } else {
                         System.out.println("No customer created , create a new one first");
@@ -59,7 +57,7 @@ public class BankingMain {
                         break;
                     }
 //                case 3:
-//                    Operations.createNewEmployee();
+//                    new Employee().createNewEmployee();
 //                    break;
 //                case 4:
 //                    Operations.createNewCustomer();
@@ -67,7 +65,7 @@ public class BankingMain {
                 case 3:
                     return;
                 default:
-                    System.out.println("Enter number between 1 to 5");
+                    System.out.println("Enter number between 1 to 3");
             }
         }
     }

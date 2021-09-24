@@ -1,6 +1,7 @@
 package banking;
 
 import main.DBManager;
+import main.DataHandler;
 import main.Operations;
 
 import java.io.IOException;
@@ -120,15 +121,7 @@ public class Address {
             break;
         }
 
-        if (DBManager.writeToDB(this)) {
-            System.out.println("Added address");
-        } else {
-            System.out.println("error in address");
-        }
-
-        // newAddress.setAddressID(fileHandling.getLastAddId());
-        System.out.println("Your AddressId : " + this.getAddressID());
-//        fileHandling.addAddresstoFile(newAddress);
+        DataHandler.createAddress(this);
         return this;
     }
 

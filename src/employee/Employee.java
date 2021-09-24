@@ -2,6 +2,7 @@ package employee;
 
 import banking.Address;
 import main.DBManager;
+import main.DataHandler;
 import main.Operations;
 
 import java.io.IOException;
@@ -146,13 +147,7 @@ public class Employee {
             this.setSalary(Integer.parseInt(st));
             this.setEmployeeAddressID(new Address().createNewAddress().getAddressID());
 
-            if (DBManager.writeToDB(this)) {
-                System.out.println("Added emp");
-            } else {
-                System.out.println("error in emp");
-            }
-
-            System.out.println("Your Employee ID : " + this.getEmployeeID());
+            DataHandler.createEmployee(this);
             return;
         }
     }

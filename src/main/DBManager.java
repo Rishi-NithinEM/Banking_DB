@@ -12,6 +12,7 @@ import customer.Customer;
 import java.io.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,17 +26,17 @@ public class DBManager {
 
         File createFile = new File("create.txt");
         try {
-            if(!createFile.exists()){
+            if (!createFile.exists()) {
                 createFile.createNewFile();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        Scanner  sc = new Scanner(createFile);
-        String creationquery ;
+        Scanner sc = new Scanner(createFile);
+        String creationquery;
 
-        while(sc.hasNextLine()){
+        while (sc.hasNextLine()) {
             creationquery = sc.nextLine();
             new ConnectionHandler(creationquery);
 //            System.out.println("added");
@@ -44,7 +45,7 @@ public class DBManager {
 
     }
 
-    public static boolean writeToDB(Customer cust) {   //To write a Customer to DB
+    public boolean writeToDB(Customer cust) {   //To write a Customer to DB
         String query = "select max(cust_id) from customer;";
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
             int customerID = 0;
@@ -59,15 +60,19 @@ public class DBManager {
             query += cust.getAddressID() + "," + cust.getPhoneNumber() + ",'" + cust.getDOB() + "');";
 //            System.out.println(query);
             ch.execute(query);
-
+            System.out.println("Your new custId is " + customerID);
+            System.out.println("Your new AddressId is " + cust.getAddressID());
             return true;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Phone no already exists to another user, plz enter a different one ");
+            return false;
         } catch (SQLException e) {
             System.out.println(e + " caught at customer add to db");
         }
         return false;
     }
 
-    public static boolean writeToDB(Employee emp) {   //To write a employee to DB
+    public boolean writeToDB(Employee emp) {   //To write a employee to DB
         String query = "select max(emp_id) from employee";
         try (ConnectionHandler rs = new ConnectionHandler(query)) {
             int empID = 0;
@@ -81,13 +86,19 @@ public class DBManager {
             query += emp.getEmployeeType() + "'," + emp.getPhoneNum() + ",'" + emp.getDob() + "'," + emp.getSalary() + "," + emp.getEmployeeAddressID() + ");";
 //            System.out.println(query);
             rs.execute(query);
+            System.out.println("New emp ID is " + empID);
+            System.out.println("Your new AddressId is " + emp.getEmployeeAddressID());
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Phone no already exists to another user, plz enter a different one ");
+            return false;
         } catch (SQLException e) {
             System.out.println(e + " caught at add employee db");
+            return false;
         }
         return true;
     }
 
-    public static boolean writeToDB(Account ac) {   //To write a account to DB
+    public boolean writeToDB(Account ac) {   //To write a account to DB
         System.out.println("\nAdding an acc");
         String lastAcc = "select max(acc_no) from account;";
         try (ConnectionHandler ch = new ConnectionHandler(lastAcc)) {
@@ -172,7 +183,7 @@ public class DBManager {
         return true;
     }
 
-    public static boolean writeToDB(Address ad) {  //To write a specific address to DB
+    public boolean writeToDB(Address ad) {  //To write a specific address to DB
         String query = "select max(id) from address";
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
             long addressID = 0;
@@ -215,7 +226,7 @@ public class DBManager {
         return ad;
     }
 
-    public static Customer getCustomer(int customerID) {   //To get a specific customer from DB
+    public Customer getCustomer(int customerID) {   //To get a specific customer from DB
         Customer newCust = null;
         String query = "select * from customer where cust_id = " + customerID;
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
@@ -238,7 +249,7 @@ public class DBManager {
         return null;
     }
 
-    public static Employee getEmployee(int empID, String name) {  //To get a specific employee from DB
+    public Employee getEmployee(int empID, String name) {  //To get a specific employee from DB
 
         String query = "select * from employee where emp_id = " + empID + " and emp_name = '" + name + "';";
 //        System.out.println(query);
@@ -261,7 +272,7 @@ public class DBManager {
         return emp;
     }
 
-    public static Account getAccount(int accNo) {   // To get a single account from DB
+    public Account getAccount(int accNo) {   // To get a single account from DB
         Account ac = null;
         String query = "select * from account where acc_no = " + accNo + ";";
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
@@ -282,7 +293,7 @@ public class DBManager {
         return ac;
     }
 
-    public static List<Account> getAllAccounts(String type) {   // To get all accounts and also specific type
+    public List<Account> getAllAccounts(String type) {   // To get all accounts and also specific type
         List<Account> all = new ArrayList<>();
         String query = "select acc_no from account";
         if (!type.equalsIgnoreCase("all")) {
@@ -292,7 +303,7 @@ public class DBManager {
         System.out.println(query);
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
             while (ch.next()) {
-                Account ac = getAccount(ch.getInt(1));
+                Account ac = DataHandler.getAccount(ch.getInt(1));
                 all.add(ac);
             }
             return all;
@@ -302,7 +313,7 @@ public class DBManager {
         }
     }
 
-    public static boolean isOwner(int sender_acc, int customerID) {  // This function is used to check whether the given account is his or not
+    public boolean isOwner(int sender_acc, int customerID) {  // This function is used to check whether the given account is his or not
 
         String query = "select * from account where cust_id = " + customerID + " and acc_no = " + sender_acc;
 
@@ -314,12 +325,12 @@ public class DBManager {
         return false;
     }
 
-    public static boolean writeToDB(Transaction tt, int customerID) {  // This function is used to write the transaction values into DB
+    public boolean writeToDB(Transaction tt, int customerID) {  // This function is used to write the transaction values into DB
         Scanner sc = new Scanner(System.in);
 //        System.out.println("wrdb tr");
         long transactionID = 0;
         String query, update = "";
-        if (!isOwner(tt.getSenderAccNo(), customerID)) {
+        if (!DataHandler.isOwner(tt.getSenderAccNo(), customerID)) {
             System.out.println("Sender acc not owned");
             return false;
         }
@@ -348,7 +359,7 @@ public class DBManager {
             tt.setTranactionTime(new Date().toString());
             String insertUpdate = "insert into transaction values(";
 
-            if(getAccount(tt.getSenderAccNo()).getBalance() < tt.getTransactionAmt()){
+            if (DataHandler.getAccount(tt.getSenderAccNo()).getBalance() < tt.getTransactionAmt()) {
                 System.out.println("Transaction amt exceeds balance");
                 return false;
             }
@@ -365,7 +376,7 @@ public class DBManager {
             rs.execute(update);
 
             insertUpdate += transactionID + "," + tt.getTransactionAmt() + ",'";
-            insertUpdate +=  tt.getTranactionTime() + "',"+customerID+");";
+            insertUpdate += tt.getTranactionTime() + "'," + customerID + ");";
 //            System.out.println(insertUpdate);
             rs.execute(insertUpdate);
             rs.execute("commit");
@@ -377,26 +388,26 @@ public class DBManager {
         return true;
     }
 
-    public static List<Integer> getBeneficiary(int sender_acc_no){   // This function is used to get all the beneficiary account of the sender
+    public List<Integer> getBeneficiary(int sender_acc_no) {   // This function is used to get all the beneficiary account of the sender
 
-        List<Integer> all= new ArrayList<>();
+        List<Integer> all = new ArrayList<>();
 
-        String query = "select receiver_acc_no from beneficiary where sender_acc_no ="+sender_acc_no;
-        try(ConnectionHandler rs = new ConnectionHandler(query)){
-            while(rs.next()){
+        String query = "select receiver_acc_no from beneficiary where sender_acc_no =" + sender_acc_no;
+        try (ConnectionHandler rs = new ConnectionHandler(query)) {
+            while (rs.next()) {
                 all.add(rs.getInt(1));
             }
-        }catch (SQLException e){
-            System.out.println(e+" caught at get beneficiary");
+        } catch (SQLException e) {
+            System.out.println(e + " caught at get beneficiary");
         }
 
         return all;
     }
 
-    public static boolean writeToDB(int send_acc , int receive_acc) throws SQLException {  // This function is used to add beneficary accounts into DB
-        String query = "insert into beneficiary values("+send_acc+","+receive_acc+")";
-        try(ConnectionHandler rs = new ConnectionHandler(query)){
-        }catch (SQLException e){
+    public boolean writeToDB(int send_acc, int receive_acc) {  // This function is used to add beneficary accounts into DB
+        String query = "insert into beneficiary values(" + send_acc + "," + receive_acc + ")";
+        try (ConnectionHandler rs = new ConnectionHandler(query)) {
+        } catch (SQLException e) {
             System.out.println(e + " caught at adding beneficiary");
             System.out.println("Already that account exists");
             return false;
@@ -405,19 +416,19 @@ public class DBManager {
         return true;
     }
 
-    public static void getAllTransaction(int cust_Id){  //This function is used to get all transaction made by a customer
+    public void getAllTransaction(int cust_Id) {  //This function is used to get all transaction made by a customer
 
         String query;
-        if(cust_Id!=-1) {
-            query= "select * from transaction where customer_id =" + cust_Id;
-        }else {
+        if (cust_Id != -1) {
+            query = "select * from transaction where customer_id =" + cust_Id;
+        } else {
             query = "select * from transaction";
         }
 
         boolean b = false;
-        try (ConnectionHandler rs = new ConnectionHandler(query)){
+        try (ConnectionHandler rs = new ConnectionHandler(query)) {
             Transaction tt;
-            while(rs.next()){
+            while (rs.next()) {
                 tt = new Transaction();
 
                 tt.setSenderAccNo(rs.getInt(1));
@@ -428,43 +439,47 @@ public class DBManager {
                 tt.setCustomerId(cust_Id);
 
                 tt.printTransaction();
-                b=true;
+                b = true;
 
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e + " caught at get all transaction");
         }
-        if(!b){
+        if (!b) {
             System.out.println("No transactions made");
         }
 
     }
 
-    public static boolean isCustomerTableEmpty(){
+    public static boolean isCustomerTableEmpty() {
 
         String query = "select COUNT(*) from customer";
 
-        try(ConnectionHandler ch = new ConnectionHandler(query)){
-            while (ch.next()){
-                return true;
+        try (ConnectionHandler ch = new ConnectionHandler(query)) {
+            while (ch.next()) {
+                if (ch.getInt(1) == 0) {
+                    return true;
+                }
             }
-        }catch (Exception e){
-            System.out.println(e+" Caught at empty cust");
+        } catch (Exception e) {
+            System.out.println(e + " Caught at empty cust");
         }
 
         return false;
     }
 
-    public static boolean isEmployeeTableEmpty(){
+    public static boolean isEmployeeTableEmpty() {
 
         String query = "select COUNT(*) from employee";
 
-        try(ConnectionHandler ch = new ConnectionHandler(query)){
-            while (ch.next()){
-                return true;
+        try (ConnectionHandler ch = new ConnectionHandler(query)) {
+            while (ch.next()) {
+                if (ch.getInt(1) == 0) {
+                    return true;
+                }
             }
-        }catch (Exception e){
-            System.out.println(e+" Caught at empty emp");
+        } catch (Exception e) {
+            System.out.println(e + " Caught at empty emp");
         }
 
         return false;

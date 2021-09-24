@@ -4,6 +4,7 @@ package customer;
 import banking.Address;
 import com.google.longrunning.Operation;
 import main.DBManager;
+import main.DataHandler;
 import main.Operations;
 
 import java.io.IOException;
@@ -115,12 +116,7 @@ public class Customer {
             }
 
             this.setAddressID(new Address().createNewAddress().getAddressID());
-            if (DBManager.writeToDB(this)) {
-                System.out.println("Added cust");
-            } else {
-                System.out.println("error in cust");
-            }
-            System.out.println("Your CustomerId is : " + this.getCustomerID());
+            DataHandler.createCustomer(this);
             return;
         }
     }

@@ -78,10 +78,12 @@ public class Operations {
 
     }
 
+
+
 //    This is used to check whether they are a customer or not
 //    if they are a customer then they can perform some online function
 
-    public static void isValidCustomer() throws IOException, ParseException, SQLException {
+    public static void loginCustomer() throws IOException, ParseException, SQLException {
 
 
         Scanner sc = new Scanner(System.in);
@@ -99,7 +101,7 @@ public class Operations {
         System.out.println("Enter customer password");
         String password = sc.nextLine();
 
-        Customer cust = DBManager.getCustomer(id);
+        Customer cust = DataHandler.getCustomer(id);
         if (cust == null) {
             System.out.println("No account found");
         } else {
@@ -118,7 +120,7 @@ public class Operations {
 //    This is used to check where they are employee or not
 //    If they are employee each type of employees are given specific tasks
 
-    public static void isValidEmployee() throws IOException, ParseException {
+    public static void loginEmployee() throws IOException, ParseException {
 
             Scanner sc = new Scanner(System.in);
             int empID;
@@ -135,7 +137,7 @@ public class Operations {
             System.out.println("Enter Employee Name");
             String empName = sc.nextLine();
 
-            Employee ee = DBManager.getEmployee(empID,empName);
+            Employee ee = DataHandler.getEmployee(empID,empName);
 
 
             if (ee != null) {
@@ -179,7 +181,7 @@ public class Operations {
                     } else {
                         num = Integer.parseInt(st);
 
-                        Customer cust = DBManager.getCustomer(num);
+                        Customer cust = DataHandler.getCustomer(num);
 
 
                         if (cust != null) {
@@ -245,7 +247,7 @@ public class Operations {
                     new Employee().createNewEmployee();
                     break;
                 case 5: {
-                    DBManager.getAllTransaction(-1);
+                    DataHandler.getAllTransaction(-1);
                     break;
                 }
                 case 6:
@@ -257,7 +259,7 @@ public class Operations {
 
 
             if (accType != "") {
-                List<Account> allAccs = DBManager.getAllAccounts(accType);
+                List<Account> allAccs = DataHandler.getAllAccounts(accType);
                 Iterator var5 = allAccs.iterator();
 
                 while (var5.hasNext()) {
@@ -336,11 +338,7 @@ public class Operations {
 //        ac.setAccountNo(fileHandling.getLastAccNo());
 //        fileHandling.addAccounttoFile(ac);
 
-        if (DBManager.writeToDB(ac)) {
-            System.out.println("Added account");
-        } else {
-            System.out.println("error in account");
-        }
+        DataHandler.createAccount(ac);
 
 
         System.out.println("Your Account Number :" + ac.getAccountNo() + "\nIFSC_CODE: " + ac.getIfscCode());
@@ -384,7 +382,7 @@ public class Operations {
                     transaction.checkBalance(cust);
                     break;
                 case 3:
-                    DBManager.getAllTransaction(cust.getCustomerID());
+                    DataHandler.getAllTransaction(cust.getCustomerID());
                     break;
                 case 4:
                     return;

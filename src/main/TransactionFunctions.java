@@ -32,17 +32,17 @@ public class TransactionFunctions {
             }
 
             tr.setSenderAccNo(accNo);
-            if(!DBManager.isOwner(accNo,cust.getCustomerID())){
+            if(!DataHandler.isOwner(accNo,cust.getCustomerID())){
                 System.out.println("Account not owned");
                 return;
             }
-            acc = DBManager.getAccount(accNo);
+            acc = DataHandler.getAccount(accNo);
 
-            if (!DBManager.getBeneficiary(accNo).isEmpty()) {    // Here is checks for already added beneficiary accounts, if there isnt one is it creates a new beneficiary account
+            if (!DataHandler.getBeneficiary(accNo).isEmpty()) {    // Here is checks for already added beneficiary accounts, if there isnt one is it creates a new beneficiary account
 
                 System.out.println("Select a beneficiary Account: \n");
 
-                Object account[] = DBManager.getBeneficiary(accNo).toArray();
+                Object account[] = DataHandler.getBeneficiary(accNo).toArray();
                 int i = 1;
                 for (Object s : account) {
                     System.out.println(i++ + "  " + s);
@@ -59,7 +59,7 @@ public class TransactionFunctions {
                 if (val <= account.length && val > 0) {
 
                     raccNo = Integer.parseInt(account[val - 1].toString());
-                    racc = DBManager.getAccount(raccNo);
+                    racc = DataHandler.getAccount(raccNo);
                     tr.setReceiverAccNo(racc.getAccountNo());
 
                     System.out.println("Enter transaction amt");
@@ -70,7 +70,7 @@ public class TransactionFunctions {
                     } else {
 
                         tr.setTransactionAmt(amt);
-                        DBManager.writeToDB(tr,cust.getCustomerID());
+                        DataHandler.addTransaction(tr,cust.getCustomerID());
                     }
 
                     break;
@@ -103,14 +103,14 @@ public class TransactionFunctions {
         Account racc;
         int accnNo = Integer.parseInt(sc.nextLine());
         if (accnNo != acc.getAccountNo()) {
-            racc = DBManager.getAccount(accnNo);
+            racc = DataHandler.getAccount(accnNo);
             if (racc != null) {
                 System.out.println("Enter Beneficiary Account IFSC code");
                 String code = sc.nextLine();
 
                 if (racc.getIfscCode().equals(code)) {
 
-                    if(DBManager.writeToDB(acc.getAccountNo(), racc.getAccountNo())){
+                    if(DataHandler.addBenefiary(acc.getAccountNo(), racc.getAccountNo())){
                         System.out.println("New beneficiary Added");
                         return racc;
                     }
@@ -136,9 +136,9 @@ public class TransactionFunctions {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter Account no");
         int accNo = Integer.parseInt(sc.nextLine());
-        Account acc = DBManager.getAccount(accNo);
+        Account acc = DataHandler.getAccount(accNo);
         if (acc != null) {
-            if (DBManager.isOwner(accNo, cust.getCustomerID())) {
+            if (DataHandler.isOwner(accNo, cust.getCustomerID())) {
                 System.out.println("Enter Pin :");
                 int pin = Integer.parseInt(sc.nextLine());
                 if (acc.getPin() == pin) {
