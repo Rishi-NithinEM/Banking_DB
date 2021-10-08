@@ -9,17 +9,12 @@ import banking.Transaction;
 import customer.Customer;
 import employee.Employee;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.text.*;
+import java.util.*;
+import java.util.regex.*;
 
 public class Operations {
 
@@ -221,16 +216,17 @@ public class Operations {
             System.out.println("\n\nEnter\n1 : to view all accounts");
             System.out.println("2 : to view all savings account");
             System.out.println("3 : to view all current account");
-            System.out.println("4 : to create an employee");
-            System.out.println("5 : to view all Transactions");
-            System.out.println("6 : exit");
+            System.out.println("4: to view all Customer");
+            System.out.println("5 : to create an employee");
+            System.out.println("6 : to view all Transactions");
+            System.out.println("7 : exit");
             String accType = "";
             int opt = 0;
             String st = sc.nextLine();
             try {
                 opt = Integer.parseInt(st);
             } catch (Exception e) {
-                System.out.println("Enter numbers between 1 - 6 only");
+                System.out.println("Enter numbers between 1 - 7 only");
                 continue;
             }
             switch (opt) {
@@ -244,13 +240,19 @@ public class Operations {
                     accType = "Current";
                     break;
                 case 4:
+                    getAlLCustomer();
+                    break;
+                case 5:
                     new Employee().createNewEmployee();
                     break;
-                case 5: {
-                    DataHandler.getAllTransaction(-1);
+                case 6: {
+                    Iterator itr =DataHandler.getAllTransaction(-1).listIterator();
+                    while(itr.hasNext()){
+                        ((Transaction)itr.next()).printTransaction();
+                    }
                     break;
                 }
-                case 6:
+                case 7:
                     return;
                 default:
                     System.out.println("Enter number between 1 - 6 only");
@@ -270,6 +272,59 @@ public class Operations {
         }
     }
 
+
+    public static void getAlLCustomer(){
+
+        Scanner sc= new Scanner(System.in);
+        System.out.println("1: order by customer name");
+        System.out.println("2: order by customer id");
+        int num= sc.nextInt();
+        int order;
+        String colmn ;
+        if(num==1){
+            colmn="cust_fname";
+            System.out.println("1: Ascending order");
+            System.out.println("2: Descending order");
+            order=sc.nextInt();
+            if(order==1){
+               printAllCustomer(DataHandler.getAllCustomer(colmn,1));
+            }else {
+                printAllCustomer(DataHandler.getAllCustomer(colmn, -1));
+            }
+        }else if(num==2){
+
+            colmn="cust_id";
+            System.out.println("1: Ascending order");
+            System.out.println("2: Descending order");
+            order=sc.nextInt();
+            if(order==1){
+                printAllCustomer(DataHandler.getAllCustomer(colmn,1));
+            }else {
+                System.out.println("sss");
+                printAllCustomer(DataHandler.getAllCustomer(colmn, -1));
+            }
+
+        }else{
+            System.out.println("enter only numbers");
+            return;
+        }
+
+    }
+
+    public static void printAllCustomer(List<Customer> customerList){
+
+        Iterator itr = customerList.listIterator();
+        Customer cust;
+        System.out.println("zz");
+        while(itr.hasNext()){
+            cust = (Customer) itr.next();
+            System.out.println("Customer id: "+cust.getCustomerID());
+            System.out.println("Customer first name: "+cust.getFirstName());
+            System.out.println("Customer last name: "+cust.getLastName());
+            System.out.println("Customer phone number: "+cust.getPhoneNumber()+"\n");
+        }
+
+    }
 
 
 
@@ -304,10 +359,6 @@ public class Operations {
         }
 
         ac.setAccType(temp - 1);
-        if (ac instanceof DepositAccount) {
-            System.out.println("Enter the deposit period in months");
-            ((DepositAccount) ac).setTermsInMonth(Integer.parseInt(sc.nextLine()));
-        }
         ac.setCustomerID(cust.getCustomerID());
         System.out.println("PIN <= 9999");
 
@@ -363,12 +414,12 @@ public class Operations {
             for (ch = 0; ch < types.length; ++ch) {
                 System.out.println(ch + 1 + " " + types[ch]);
             }
-            System.out.println("3 Check Transactions\n4 Exit");
+            System.out.println("3 Check Transactions\n4 Amount Received\n5 Check Transaction Between Dates\n6Exit");
             st = sc.nextLine();
             try {
                 ch = Integer.parseInt(st);
             } catch (Exception e) {
-                System.out.println("Enter numbers between 1 - 4 only");
+                System.out.println("Enter numbers between 1 - 6 only");
                 continue;
             }
 
@@ -382,17 +433,91 @@ public class Operations {
                     transaction.checkBalance(cust);
                     break;
                 case 3:
-                    DataHandler.getAllTransaction(cust.getCustomerID());
+                    Iterator itr = DataHandler.getAllTransaction(cust.getCustomerID()).listIterator();
+                    while(itr.hasNext()){
+                        ((Transaction)itr.next()).printTransaction();
+                    }
                     break;
                 case 4:
+                    System.out.println("Enter your account number");
+                    int num = sc.nextInt();
+                    DataHandler.amountReceived(num,cust);
+                    break;
+                case 5:
+                    printTransactionbetweendates(cust);
+                    break;
+                case 6:
                     return;
                 default:
-                    System.out.println("Enter number between 1- 4 only");
+                    System.out.println("Enter number between 1- 6 only");
                     continue;
 
 
             }
         }
+    }
+
+
+    public static void printTransactionbetweendates(Customer cust) throws ParseException {
+
+        Scanner sc = new Scanner(System.in);
+        Date d1;
+        Date d2;
+        List<Transaction> tr;
+        while(true) {
+            System.out.println("Enter first date lesser than the secound\nFrom date as dd/mm/yyyy");
+            String from = sc.nextLine();
+            if (from.length() != 0) {
+                if (!dobCheck(from)) {
+                    System.out.println("Enter Date in the correct format dd/mm/yyyy (eg: 31/03/1997)");
+                    continue;
+                }
+            }
+            System.out.println("TO date as dd/mm/yyyy");
+            String to = sc.nextLine();
+            if (to.length() != 0) {
+                if (!dobCheck(to)) {
+                    System.out.println("Enter Date in the correct format dd/mm/yyyy (eg: 31/03/1997)");
+                    continue;
+                }
+            }
+            if (from.length() != 0 && to.length() != 0) {
+                SimpleDateFormat formatter1 = new SimpleDateFormat("dd/MM/yyyy");
+
+                if(from.length()==0 && to.length()!=0){
+                    d1 = formatter1.parse("01/01/1900");
+                    d2 = formatter1.parse(to);
+                }else if(to.length()==0 && from.length()!=0){
+                    d1 = formatter1.parse(from);
+                    d2 = new Date();
+                }else {
+                    d1 = formatter1.parse(from);
+                    d2 = formatter1.parse(to);
+                }
+                if (d2.before(d1)) {
+                    continue;
+                } else
+                    System.out.println("From date should be before to date");
+                    break;
+            }else{
+                System.out.println("Both dates cant be null");
+            }
+        }
+        tr = DataHandler.getTransationsbetweenTime(d1,d2);
+        Iterator itr = tr.listIterator();
+        boolean b = false;
+        while(itr.hasNext()){
+
+            Transaction tt= (Transaction)itr.next();
+            if(tt.getCustomerId()==cust.getCustomerID()){
+                tt.printTransaction();
+                b=true;
+            }
+        }
+        if(!b){
+            System.out.println("No transaction made in that time zone");
+        }
+
     }
 
 

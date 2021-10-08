@@ -6,8 +6,9 @@ import banking.Transaction;
 import customer.Customer;
 import employee.Employee;
 
-import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DataHandler {
@@ -100,17 +101,22 @@ public class DataHandler {
     }
 
     public static boolean addBenefiary(int sender_acc , int receiver_acc) {
-
-        if(dbManager.writeToDB(sender_acc, receiver_acc)){
-            return true;
-        }
-        return false;
-
+        return dbManager.writeToDB(sender_acc, receiver_acc);
     }
 
-    public static void getAllTransaction(int custId){
+    public static List<Transaction> getAllTransaction(int custId){
+        return dbManager.getAllTransaction(custId);
+    }
 
-        dbManager.getAllTransaction(custId);
+    public static List<Customer> getAllCustomer(String colmn , int order){
+        return dbManager.getAllCustomer(colmn, order);
+    }
 
+    public static void amountReceived(int accno,Customer cust){
+        dbManager.amountReceived(accno,cust);
+    }
+
+    public static List<Transaction> getTransationsbetweenTime(Date from , Date to) throws ParseException{
+        return dbManager.getTransationsbetweenTime(from,to);
     }
 }

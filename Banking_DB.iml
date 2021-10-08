@@ -8,5 +8,23 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="groovy-2.5.11 (3)" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library name="SQL">
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/build/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/demo/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/generated/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/legacy/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/main/core-api/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/main/core-impl/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/main/protocol-impl/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/main/user-api/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/main/user-impl/java" />
+          <root url="jar://$MODULE_DIR$/../mysql-connector-java-8.0.26.zip!/mysql-connector-java-8.0.26/src/test/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

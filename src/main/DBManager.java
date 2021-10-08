@@ -10,13 +10,11 @@ import employee.Employee;
 import customer.Customer;
 
 import java.io.*;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 public class DBManager {
@@ -38,7 +36,7 @@ public class DBManager {
 
         while (sc.hasNextLine()) {
             creationquery = sc.nextLine();
-            new ConnectionHandler(creationquery);
+          ConnectionHandler ch =  new ConnectionHandler(creationquery);
 //            System.out.println("added");
         }
 
@@ -309,7 +307,7 @@ public class DBManager {
             return all;
         } catch (SQLException sqe) {
             System.out.println(sqe + " getAllaccount");
-            return null;
+            return all;
         }
     }
 
@@ -375,8 +373,8 @@ public class DBManager {
 //            System.out.println(update);
             rs.execute(update);
 
-            insertUpdate += transactionID + "," + tt.getTransactionAmt() + ",'";
-            insertUpdate += tt.getTranactionTime() + "'," + customerID + ");";
+            insertUpdate += transactionID + "," + tt.getTransactionAmt() + ",";
+            insertUpdate += customerID + ",'" + tt.getTranactionTime() + "');";
 //            System.out.println(insertUpdate);
             rs.execute(insertUpdate);
             rs.execute("commit");
@@ -416,15 +414,15 @@ public class DBManager {
         return true;
     }
 
-    public void getAllTransaction(int cust_Id) {  //This function is used to get all transaction made by a customer
+    public List<Transaction> getAllTransaction(int cust_Id) {  //This function is used to get all transaction made by a customer
 
         String query;
         if (cust_Id != -1) {
-            query = "select * from transaction where customer_id =" + cust_Id;
+            query = "select * from transaction where cust_id =" + cust_Id;
         } else {
             query = "select * from transaction";
         }
-
+        List<Transaction> transactionList = new ArrayList<>();
         boolean b = false;
         try (ConnectionHandler rs = new ConnectionHandler(query)) {
             Transaction tt;
@@ -435,10 +433,10 @@ public class DBManager {
                 tt.setReceiverAccNo(rs.getInt(2));
                 tt.setTransactionID(rs.getLong(3));
                 tt.setTransactionAmt(rs.getInt(4));
-                tt.setTranactionTime(rs.getString(5));
-                tt.setCustomerId(cust_Id);
-
-                tt.printTransaction();
+                tt.setTranactionTime(rs.getString(6));
+                tt.setCustomerId(rs.getInt(5));
+                transactionList.add(tt);
+//                tt.printTransaction();
                 b = true;
 
             }
@@ -448,7 +446,7 @@ public class DBManager {
         if (!b) {
             System.out.println("No transactions made");
         }
-
+        return transactionList;
     }
 
     public static boolean isCustomerTableEmpty() {
@@ -484,6 +482,94 @@ public class DBManager {
 
         return false;
     }
+
+    public List<Customer> getAllCustomer(String colmn,int num){
+        String order ="";
+        if(num==-1){
+            order="DESC";
+        }else {
+            order="ASC";
+        }
+        List<Customer> customerList = new ArrayList<>();
+        String query = "select * from customer order by "+colmn+" "+order+";";
+        try(ConnectionHandler ch = new ConnectionHandler(query)){
+
+            Customer newCust;
+            while (ch.next()) {
+                newCust = new Customer();
+                newCust.setCustomerID(ch.getInt(1));
+                newCust.setFirstName(ch.getString(2));
+                newCust.setLastName(ch.getString(3));
+                newCust.setPassword(ch.getString(4));
+                newCust.setAddressID(ch.getLong(5));
+                newCust.setPhoneNumber(ch.getLong(6));
+                newCust.setDOB(ch.getString(7));
+
+                customerList.add(newCust);
+            }
+
+        }catch (SQLException e){
+            System.out.println(e+" caught at get all cust");
+        }
+        return customerList;
+    }
+
+    public void amountReceived(int accno,Customer customer){
+
+        if(!isOwner(accno,customer.getCustomerID())){
+            System.out.println("Not Owner");
+            return;
+        }
+        String query = "select * from transaction where receiver_acc_no = "+accno;
+        boolean b=false;
+        try(ConnectionHandler rs = new ConnectionHandler(query)){
+            Transaction tt ;
+
+            while(rs.next()){
+                tt = new Transaction();
+
+                tt.setSenderAccNo(rs.getInt(1));
+                tt.setReceiverAccNo(rs.getInt(2));
+                tt.setTransactionID(rs.getLong(3));
+                tt.setTransactionAmt(rs.getInt(4));
+                tt.setTranactionTime(rs.getString(6));
+                tt.setCustomerId(rs.getInt(5));
+
+                tt.printTransaction();
+                b = true;
+            }
+
+        }catch (Exception e){
+            System.out.println(e+" Caught at received Amount");
+        }
+        if(!b){
+            System.out.println("No Transactions made yet");
+        }
+    }
+
+    public List<Transaction> getTransationsbetweenTime(Date from , Date to) throws ParseException {
+
+        List<Transaction> transactionList = getAllTransaction(-1);
+        List<Transaction> transactions = new ArrayList<>();
+        Transaction tt;
+        Iterator itr = transactionList.listIterator();
+        while(itr.hasNext()){
+            tt = (Transaction) itr.next();
+            String dt=tt.getTranactionTime();
+            dt=dt.replaceAll("IST","");
+            SimpleDateFormat formatter5 = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy");
+
+            Date d1 = formatter5.parse(dt);
+//            System.out.println(d1+" "+d1.after(from)+" "+d1.before(to)+" "+from+" "+to);
+
+            if(d1.after(from) && d1.before(to)){
+                transactions.add(tt);
+            }
+        }
+
+        return transactions;
+    }
+
 
 
 }

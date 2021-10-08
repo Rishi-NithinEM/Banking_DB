@@ -35,6 +35,7 @@ public class DepositAccount extends Account {
     public DepositAccount() {
         this.setBalance(1000);
         this.setInterestRate(0.45D);
+        this.setTermsInMonth(24);
         this.setDepositDate(new Date());
     }
 
