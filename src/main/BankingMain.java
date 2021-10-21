@@ -10,11 +10,14 @@ import java.util.Scanner;
 
 public class BankingMain {
 
+    public static DataHandler dd = new DataHandler();
 
     public static void main(String[] arg) throws IOException, ParseException, SQLException {
 
 
 //        DBManager.createTable();
+
+//      dbManager
 
 
         String functions = "Enter\n1 : login as Employee\n";
@@ -38,15 +41,15 @@ public class BankingMain {
             }
 
             switch (opt) {
-//                case 1:
-//                    if (!DBManager.isEmployeeTableEmpty()) {
-//                        Operations.loginEmployee();
-//                        break;
-//                    }else {
-//                        System.out.println("No Employee created , create a new one first");
-//                        new Employee().createNewEmployee();
-//                        break;
-//                    }
+                case 1:
+                    if (!DBManager.isEmployeeTableEmpty()) {
+                        Operations.loginEmployee();
+                        break;
+                    }else {
+                        System.out.println("No Employee created , create a new one first");
+                        new Employee().createNewEmployee();
+                        break;
+                    }
                 case 2:
                     if (!DBManager.isCustomerTableEmpty()) {
                         Operations.loginCustomer();

@@ -1,6 +1,5 @@
 package banking;
 
-import main.DBManager;
 import main.DataHandler;
 import main.Operations;
 

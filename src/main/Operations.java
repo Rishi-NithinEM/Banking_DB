@@ -4,12 +4,10 @@ import accounts.Account;
 import accounts.CurrentAccount;
 import accounts.DepositAccount;
 import accounts.SavingsAccount;
-import banking.Address;
 import banking.Transaction;
 import customer.Customer;
 import employee.Employee;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.*;
@@ -20,7 +18,7 @@ public class Operations {
 
 
 
-
+public static DataHandler dataHandler= new DBManager();
 
 
     public static boolean checkPhoneNumber(String str) {
@@ -96,10 +94,11 @@ public class Operations {
         System.out.println("Enter customer password");
         String password = sc.nextLine();
 
-        Customer cust = DataHandler.getCustomer(id);
+        Customer cust = dataHandler.getCustomer(id);
         if (cust == null) {
             System.out.println("No account found");
         } else {
+
             if(cust.getPassword().equals(password)) {
                 System.out.println("found " + cust.getFirstName() + ",s Account");
                 performOnlineTransaction(cust);
@@ -132,7 +131,7 @@ public class Operations {
             System.out.println("Enter Employee Name");
             String empName = sc.nextLine();
 
-            Employee ee = DataHandler.getEmployee(empID,empName);
+            Employee ee = dataHandler.getEmployee(empID,empName);
 
 
             if (ee != null) {
@@ -176,7 +175,7 @@ public class Operations {
                     } else {
                         num = Integer.parseInt(st);
 
-                        Customer cust = DataHandler.getCustomer(num);
+                        Customer cust = dataHandler.getCustomer(num);
 
 
                         if (cust != null) {
@@ -246,7 +245,7 @@ public class Operations {
                     new Employee().createNewEmployee();
                     break;
                 case 6: {
-                    Iterator itr =DataHandler.getAllTransaction(-1).listIterator();
+                    Iterator itr =dataHandler.getAllTransaction(-1).listIterator();
                     while(itr.hasNext()){
                         ((Transaction)itr.next()).printTransaction();
                     }
@@ -261,7 +260,7 @@ public class Operations {
 
 
             if (accType != "") {
-                List<Account> allAccs = DataHandler.getAllAccounts(accType);
+                List<Account> allAccs = dataHandler.getAllAccounts(accType);
                 Iterator var5 = allAccs.iterator();
 
                 while (var5.hasNext()) {
@@ -287,9 +286,9 @@ public class Operations {
             System.out.println("2: Descending order");
             order=sc.nextInt();
             if(order==1){
-               printAllCustomer(DataHandler.getAllCustomer(colmn,1));
+               printAllCustomer(dataHandler.getAllCustomer(colmn,1));
             }else {
-                printAllCustomer(DataHandler.getAllCustomer(colmn, -1));
+                printAllCustomer(dataHandler.getAllCustomer(colmn, -1));
             }
         }else if(num==2){
 
@@ -298,10 +297,10 @@ public class Operations {
             System.out.println("2: Descending order");
             order=sc.nextInt();
             if(order==1){
-                printAllCustomer(DataHandler.getAllCustomer(colmn,1));
+                printAllCustomer(dataHandler.getAllCustomer(colmn,1));
             }else {
                 System.out.println("sss");
-                printAllCustomer(DataHandler.getAllCustomer(colmn, -1));
+                printAllCustomer(dataHandler.getAllCustomer(colmn, -1));
             }
 
         }else{
@@ -423,7 +422,7 @@ public class Operations {
                 continue;
             }
 
-            TransactionFunctions transaction = new TransactionFunctions();
+            DBTransactionFunctions transaction = new DBTransactionFunctions();
 
             switch (ch) {
                 case 1:
@@ -433,7 +432,7 @@ public class Operations {
                     transaction.checkBalance(cust);
                     break;
                 case 3:
-                    Iterator itr = DataHandler.getAllTransaction(cust.getCustomerID()).listIterator();
+                    Iterator itr = dataHandler.getAllTransaction(cust.getCustomerID()).listIterator();
                     while(itr.hasNext()){
                         ((Transaction)itr.next()).printTransaction();
                     }
@@ -441,7 +440,7 @@ public class Operations {
                 case 4:
                     System.out.println("Enter your account number");
                     int num = sc.nextInt();
-                    DataHandler.amountReceived(num,cust);
+                    dataHandler.amountReceived(num,cust);
                     break;
                 case 5:
                     printTransactionbetweendates(cust);
@@ -503,7 +502,7 @@ public class Operations {
                 System.out.println("Both dates cant be null");
             }
         }
-        tr = DataHandler.getTransationsbetweenTime(d1,d2);
+        tr = dataHandler.getTransationsbetweenTime(d1,d2);
         Iterator itr = tr.listIterator();
         boolean b = false;
         while(itr.hasNext()){

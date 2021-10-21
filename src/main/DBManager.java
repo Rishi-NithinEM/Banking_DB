@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 
-public class DBManager {
+public class DBManager extends DataHandler{
 
     public static void createTable() throws SQLException, FileNotFoundException {  // This is used to the create tables
 
@@ -30,6 +30,7 @@ public class DBManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
 
         Scanner sc = new Scanner(createFile);
         String creationquery;
@@ -270,7 +271,7 @@ public class DBManager {
         return emp;
     }
 
-    public Account getAccount(int accNo) {   // To get a single account from DB
+    public static Account getAccount(int accNo) {   // To get a single account from DB
         Account ac = null;
         String query = "select * from account where acc_no = " + accNo + ";";
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
@@ -301,7 +302,7 @@ public class DBManager {
         System.out.println(query);
         try (ConnectionHandler ch = new ConnectionHandler(query)) {
             while (ch.next()) {
-                Account ac = DataHandler.getAccount(ch.getInt(1));
+                Account ac = new DBManager().getAccount(ch.getInt(1));
                 all.add(ac);
             }
             return all;
@@ -311,7 +312,7 @@ public class DBManager {
         }
     }
 
-    public boolean isOwner(int sender_acc, int customerID) {  // This function is used to check whether the given account is his or not
+    public static boolean isOwner(int sender_acc, int customerID) {  // This function is used to check whether the given account is his or not
 
         String query = "select * from account where cust_id = " + customerID + " and acc_no = " + sender_acc;
 
@@ -328,7 +329,7 @@ public class DBManager {
 //        System.out.println("wrdb tr");
         long transactionID = 0;
         String query, update = "";
-        if (!DataHandler.isOwner(tt.getSenderAccNo(), customerID)) {
+        if (!new DBManager().isOwner(tt.getSenderAccNo(), customerID)) {
             System.out.println("Sender acc not owned");
             return false;
         }
@@ -357,7 +358,7 @@ public class DBManager {
             tt.setTranactionTime(new Date().toString());
             String insertUpdate = "insert into transaction values(";
 
-            if (DataHandler.getAccount(tt.getSenderAccNo()).getBalance() < tt.getTransactionAmt()) {
+            if (new DBManager().getAccount(tt.getSenderAccNo()).getBalance() < tt.getTransactionAmt()) {
                 System.out.println("Transaction amt exceeds balance");
                 return false;
             }
@@ -386,7 +387,7 @@ public class DBManager {
         return true;
     }
 
-    public List<Integer> getBeneficiary(int sender_acc_no) {   // This function is used to get all the beneficiary account of the sender
+    public static List<Integer> getBeneficiary(int sender_acc_no) {   // This function is used to get all the beneficiary account of the sender
 
         List<Integer> all = new ArrayList<>();
 

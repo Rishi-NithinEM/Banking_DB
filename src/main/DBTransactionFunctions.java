@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
-public class TransactionFunctions {
+public class DBTransactionFunctions {
 
 //  This function is used to transfer amount between accounts
 
@@ -32,7 +32,7 @@ public class TransactionFunctions {
             }
 
             tr.setSenderAccNo(accNo);
-            if(!DataHandler.isOwner(accNo,cust.getCustomerID())){
+            if(!DBManager.isOwner(accNo,cust.getCustomerID())){
                 System.out.println("Account not owned");
                 return;
             }

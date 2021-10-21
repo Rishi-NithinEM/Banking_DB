@@ -48,14 +48,14 @@ public class DataHandler {
         System.out.println("New Address created");
     }
 
-    public static Customer getCustomer(int id){
+    public Customer getCustomer(int id){
         if(dbManager.getCustomer(id)!=null){
             return dbManager.getCustomer(id);
         }
         return null;
     }
 
-    public static Employee getEmployee(int id , String  name){
+    public Employee getEmployee(int id, String name){
         if(dbManager.getEmployee(id,name)!=null){
             return dbManager.getEmployee(id, name);
         }
@@ -69,7 +69,7 @@ public class DataHandler {
         return null;
     }
 
-    public static List<Account> getAllAccounts(String type) {
+    public List<Account> getAllAccounts(String type) {
         if(dbManager.getAllAccounts(type)!=null){
             return dbManager.getAllAccounts(type);
         }
@@ -104,19 +104,19 @@ public class DataHandler {
         return dbManager.writeToDB(sender_acc, receiver_acc);
     }
 
-    public static List<Transaction> getAllTransaction(int custId){
+    public List<Transaction> getAllTransaction(int custId){
         return dbManager.getAllTransaction(custId);
     }
 
-    public static List<Customer> getAllCustomer(String colmn , int order){
+    public List<Customer> getAllCustomer(String colmn, int order){
         return dbManager.getAllCustomer(colmn, order);
     }
 
-    public static void amountReceived(int accno,Customer cust){
+    public void amountReceived(int accno, Customer cust){
         dbManager.amountReceived(accno,cust);
     }
 
-    public static List<Transaction> getTransationsbetweenTime(Date from , Date to) throws ParseException{
+    public List<Transaction> getTransationsbetweenTime(Date from, Date to) throws ParseException{
         return dbManager.getTransationsbetweenTime(from,to);
     }
 }
